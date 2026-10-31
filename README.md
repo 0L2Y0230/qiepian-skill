@@ -2,13 +2,29 @@
 
 跨 Agent 的直播带货原话切片技能，面向 **Codex、DeepSeek Harness、豆包工作、Kimi Code CLI**。读取 MP4 和/或可靠 SRT，产出可直接剪辑的主播原话方案，不自动剪辑或发布视频。
 
-**技能版本：1.1.0 · 业务规则：V5.1**
+**技能版本：1.1.1 · 业务规则：V5.1**
 
 [已公开发布的版本](https://github.com/0L2Y0230/qiepian-skill/releases) · [版本记录](CHANGELOG.md) · [完整安装与兼容性说明](docs/安装与兼容性.md)
 
+## 让你的 Agent 从 GitHub 帮你安装
+
+把下面整段发送给 **DeepSeek Harness、豆包工作、Kimi Code 或 Codex**：
+
+```text
+请帮我从 GitHub 安装“切片skill”：
+https://github.com/0L2Y0230/qiepian-skill
+
+先读取仓库 README.md 和 docs/通过GitHub安装.md，根据你当前真实的 Agent 产品选择安装方式。优先从最新正式 Release 下载 qiepian-skill-v*.zip 和 SHA256SUMS.txt，核对 ZIP 哈希及包内 manifest.json，再安装完整 qiepian-skill 文件夹，包含 references 中的全部规则。
+不要只复制 SKILL.md，不要复制作者本机配置，不要覆盖已有同名技能，不要把视频、输出、缓存或凭据写进技能目录。
+安装后确认技能可被当前 Agent 发现，并按 SKILL.md 执行安装自检，实际完整读取规则。只有安装和自检完成后才告诉我安装成功，并提示我发送 SRT 字幕，或 MP4＋对应 SRT，以及目标商品。
+如缺少下载、文件写入或界面导入能力，请说明实际卡在哪一步，并告诉我完成安装所需的最少操作；不要把下载成功当成安装成功。
+```
+
+详细过程和替代下载方式见 [通过 GitHub 安装](docs/通过GitHub安装.md)。普通使用者无需自己输入终端命令；Agent 仍需具备相应下载、文件或界面能力。豆包工作使用官方技能导入入口，不能仅把 ZIP 留在下载目录就算安装完成。
+
 ## 安装
 
-使用对应版本的 `qiepian-skill-v1.1.0.zip`，解压得到直接包含 SKILL.md 和 references/ 的 qiepian-skill 文件夹。版本记录存在不代表已经发布到 GitHub；未发布版本以实际交付的本地 ZIP 为准。
+从 [最新正式 Release](https://github.com/0L2Y0230/qiepian-skill/releases/latest) 获取技能 ZIP 和 SHA256SUMS.txt，或让 Agent 按上方指令安装。本版文件名为 `qiepian-skill-v1.1.1.zip`；解压后得到直接包含 SKILL.md 和 references/ 的 qiepian-skill 文件夹。
 
 | Agent | 安装完整目录 | 使用入口 |
 |---|---|---|
@@ -35,7 +51,7 @@ python scripts/install_agent.py --agent kimi --scope project --project-dir /abso
 
 同一项目目录只需安装一次，不要用另一个 Agent 名称覆盖同名目标。安装器拒绝覆盖已有安装，支持 `--dry-run`，不复制 config.local.json。没有 Python 可手动安装；生成方案不依赖 Python。
 
-Codex 也可从本地目录安装，或使用其技能安装器安装已公开发布的仓库版本；远程仓库未更新前，不会自动获得本地新版本。
+支持 GitHub 仓库技能安装的 Agent，也可使用自己的安装器读取本仓库根目录；需要固定版本时选择发布标签，不能误装旧分支。
 
 ## 安装之后
 
@@ -78,7 +94,7 @@ Codex 也可从本地目录安装，或使用其技能安装器安装已公开�
 更新前保存现有技能、自行修改内容和配置，并由使用者处理旧安装。本包不自动删除、移动或覆盖已有技能。素材与结果留在技能目录之外。
 
 ```text
-python scripts/verify_package.py /path/to/qiepian-skill-v1.1.0.zip
+python scripts/verify_package.py /path/to/qiepian-skill-v1.1.1.zip
 ```
 
 ZIP 内 manifest.json 记录文件校验值，SHA256SUMS.txt 用于核对 ZIP。自动检查证明文件与安装完整性，不能证明模型遵守规则。每个 Agent 应按 [验收测试方案](tests/验收测试方案.md) 执行 T0–T4，有授权视频再执行 T5。演示字幕是虚构素材。
@@ -89,8 +105,8 @@ ZIP 内 manifest.json 记录文件校验值，SHA256SUMS.txt 用于核对 ZIP。
 
 ```text
 python -m unittest discover -s tests -p "test_*.py"
-python scripts/build_release.py --output-dir dist/release-v1.1.0
-python scripts/verify_package.py dist/release-v1.1.0/qiepian-skill-v1.1.0.zip
+python scripts/build_release.py --output-dir dist/release-v1.1.1
+python scripts/verify_package.py dist/release-v1.1.1/qiepian-skill-v1.1.1.zip
 ```
 
 另行运行技能格式校验，记录实际宿主行为测试范围。打包排除本机配置、Git、缓存、素材和输出。已有同名 ZIP 不覆盖；未获公开发布指令时只构建本地包，不自动推送或发布 Release。
