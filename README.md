@@ -2,7 +2,7 @@
 
 跨 Agent 的直播带货原话切片技能，面向 **Codex、DeepSeek Harness、豆包工作、Kimi Code CLI**。读取 MP4 和/或可靠 SRT，产出可直接剪辑的主播原话方案，不自动剪辑或发布视频。
 
-**技能版本：1.1.1 · 业务规则：V5.1**
+**技能版本：1.1.2 · 业务规则：V5.1**
 
 [已公开发布的版本](https://github.com/0L2Y0230/qiepian-skill/releases) · [版本记录](CHANGELOG.md) · [完整安装与兼容性说明](docs/安装与兼容性.md)
 
@@ -24,7 +24,7 @@ https://github.com/0L2Y0230/qiepian-skill
 
 ## 安装
 
-从 [最新正式 Release](https://github.com/0L2Y0230/qiepian-skill/releases/latest) 获取技能 ZIP 和 SHA256SUMS.txt，或让 Agent 按上方指令安装。本版文件名为 `qiepian-skill-v1.1.1.zip`；解压后得到直接包含 SKILL.md 和 references/ 的 qiepian-skill 文件夹。
+从 [最新正式 Release](https://github.com/0L2Y0230/qiepian-skill/releases/latest) 获取技能 ZIP 和 SHA256SUMS.txt，或让 Agent 按上方指令安装。本版文件名为 `qiepian-skill-v1.1.2.zip`；解压后得到直接包含 SKILL.md 和 references/ 的 qiepian-skill 文件夹。
 
 | Agent | 安装完整目录 | 使用入口 |
 |---|---|---|
@@ -52,6 +52,8 @@ python scripts/install_agent.py --agent kimi --scope project --project-dir /abso
 同一项目目录只需安装一次，不要用另一个 Agent 名称覆盖同名目标。安装器拒绝覆盖已有安装，支持 `--dry-run`，不复制 config.local.json。没有 Python 可手动安装；生成方案不依赖 Python。
 
 支持 GitHub 仓库技能安装的 Agent，也可使用自己的安装器读取本仓库根目录；需要固定版本时选择发布标签，不能误装旧分支。
+
+每次成稿检查五项质量：开头有吸引力、主线集中、卖点有说服力且不重复、衔接自然语境完整、结尾推动购买；素材不足则披露缺口，原话与证据边界优先。
 
 ## 安装之后
 
@@ -94,7 +96,7 @@ python scripts/install_agent.py --agent kimi --scope project --project-dir /abso
 更新前保存现有技能、自行修改内容和配置，并由使用者处理旧安装。本包不自动删除、移动或覆盖已有技能。素材与结果留在技能目录之外。
 
 ```text
-python scripts/verify_package.py /path/to/qiepian-skill-v1.1.1.zip
+python scripts/verify_package.py /path/to/qiepian-skill-v1.1.2.zip
 ```
 
 ZIP 内 manifest.json 记录文件校验值，SHA256SUMS.txt 用于核对 ZIP。自动检查证明文件与安装完整性，不能证明模型遵守规则。每个 Agent 应按 [验收测试方案](tests/验收测试方案.md) 执行 T0–T4，有授权视频再执行 T5。演示字幕是虚构素材。
@@ -105,8 +107,8 @@ ZIP 内 manifest.json 记录文件校验值，SHA256SUMS.txt 用于核对 ZIP。
 
 ```text
 python -m unittest discover -s tests -p "test_*.py"
-python scripts/build_release.py --output-dir dist/release-v1.1.1
-python scripts/verify_package.py dist/release-v1.1.1/qiepian-skill-v1.1.1.zip
+python scripts/build_release.py --output-dir dist/release-v1.1.2
+python scripts/verify_package.py dist/release-v1.1.2/qiepian-skill-v1.1.2.zip
 ```
 
 另行运行技能格式校验，记录实际宿主行为测试范围。打包排除本机配置、Git、缓存、素材和输出。已有同名 ZIP 不覆盖；未获公开发布指令时只构建本地包，不自动推送或发布 Release。
