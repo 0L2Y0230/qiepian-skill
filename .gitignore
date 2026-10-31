@@ -11,3 +11,6 @@ Thumbs.db
 *.wav
 outputs/
 tmp/
+dist/
+config.local.json
+*.local.json

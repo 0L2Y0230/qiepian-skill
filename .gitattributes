@@ -1,4 +1,7 @@
 * text=auto
 *.md text eol=lf
 *.yaml text eol=lf
-/rules/** -text
+/references/** -text
+/tests/fixtures/** -text
+*.py text eol=lf
+*.json text eol=lf

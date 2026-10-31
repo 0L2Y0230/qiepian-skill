@@ -1,57 +1,72 @@
 # 切片skill
 
-直播带货主播原话切片方案技能。技术标识为 `qiepian-skill`，业务规则为 V5.1（以每次实际读取的主文件为准）。
+可长期分享的 Codex 技能：从直播带货 MP4 和/或 SRT 整理可直接剪辑的主播原话方案。
 
-## 使用
+**技能版本：1.0.0 · 业务规则：V5.1**
 
-在 Codex 新聊天中提供 MP4 和/或 SRT 路径，然后发送：
+[下载最新安装包](https://github.com/0L2Y0230/qiepian-skill/releases/latest) · [查看版本记录](CHANGELOG.md)
+
+## 安装
+
+1. 从 Release 下载 `qiepian-skill-v1.0.0.zip`，而不是直接使用 GitHub 自动生成的源码压缩包。
+2. 解压后得到一个 `qiepian-skill` 文件夹，里面直接包含 `SKILL.md`。
+3. 将该文件夹放入你所用 Codex 环境的用户技能目录。本机已配置 CODEX_HOME 的环境可使用其 skills 子目录；其他环境请以实际技能目录为准。
+4. 新开聊天，输入下方调用语句。默认不需要建立任何盘符目录、不需要作者账号、API 密钥或 Python。
 
 ```text
 使用 $qiepian-skill 生成切片文案，素材路径：……
 ```
 
-支持 SRT-only；多商品未指定时先确认，保留原话、时间码与可靠的原始 SRT 编号。默认 45–90 秒，四项正文、1 条标题和 3 个话题。音画核实等级按实际证据披露。
+可指定商品和输出位置：
 
-## 文件与本机位置
-
-- `SKILL.md`：技能入口和执行流程。
-- `agents/openai.yaml`：显示名称、调用提示和自动发现配置。
-- `rules/AGENTS.md`、`rules/01_现行规则/`：从 `D:\Daihuo` 按原字节备份的五份规则文件。
-- 本机安装位置：`D:\CodexHome\skills\qiepian-skill`，也是本仓库的工作目录。
-- 本机现行规则入口：`D:\Daihuo`。每次执行重新读取，不能用仓库备份代替。
-- 默认文案输出：`D:\GPTWork\切片带货\outputs`。
-
-## 后续更新
-
-修改本机技能文件后，在 PowerShell 提交并上传：
-
-```powershell
-Set-Location -LiteralPath 'D:\CodexHome\skills\qiepian-skill'
-git diff
-git add -- SKILL.md agents/openai.yaml README.md .gitignore .gitattributes rules
-git commit -m "更新切片skill"
-git push
+```text
+使用 $qiepian-skill，商品是阔腿牛仔裤，素材是我提供的 SRT；结果保存到我指定的输出文件夹。
 ```
 
-规则仍在 `D:\Daihuo` 维护。获得规则修改授权并完成修改后，在本仓库目录更新备份，再提交上传：
+只有 SRT 也能生成文本方案；多商品未指定时先确认。默认保留主播原话、来源时间码和可靠的原始 SRT 编号，预计 45–90 秒，四项正文、1 条标题、3 个话题。具体核实等级由本次实际证据决定，技能不会自动剪辑或发布视频。
 
-```powershell
-Copy-Item -LiteralPath 'D:\Daihuo\AGENTS.md' -Destination '.\rules\AGENTS.md'
-foreach ($ruleFile in @('独立版总控执行卡.md', '切片文案执行卡.md', '切片文案.md', '独立版强制验收卡.md')) {
-    Copy-Item -LiteralPath (Join-Path 'D:\Daihuo\01_现行规则' $ruleFile) -Destination (Join-Path '.\rules\01_现行规则' $ruleFile)
-}
-git diff
-git add -- rules
-git commit -m "同步现行切片规则"
-git push
+## 规则和输出位置
+
+完整规则随包放在 `references/`，默认使用相对路径。每次正式生成/修改重新读取，交付前验收。`VERSION.json` 中技能版本与规则版本分开记录。
+
+默认输出到使用者当前工作目录的 `outputs`，可在当次请求中改位置。请在素材/项目工作目录发起任务，避免将技能目录作为业务工作目录。
+
+需要固定外部规则或输出位置时，可复制 `config.example.json` 为 `config.local.json` 并修改三个路径。相对规则/环境路径以技能目录为基准；相对输出路径以当前工作目录为基准。这个可选配置不会提交到仓库，也不会装进 Release ZIP。不要将私密信息写进配置。
+
+一次只使用一个完整规则来源；不能拼用不同版本。用户/项目原有明确规则仍然生效，不会被本包自动覆盖。
+
+## 更新
+
+Release 安装用户：下载新版本，先阅读更新说明。备份现有技能及自行修改内容，将旧技能文件夹移出技能发现目录，再放入新文件夹，避免同时发现两个同名技能。仅在确有需要时，将自己的 `config.local.json` 复制到新目录，并核对配置仍然适用。素材与结果保存在技能目录之外，不随更新替换。
+
+Git 安装用户：先 `git status` 检查本地改动，再执行 `git pull --ff-only`。有改动时先保存或提交，发生分叉时不要强制覆盖。版本标签用于固定与回退某个已发布版本；每个 Release 安装包发布后不覆盖，同名版本有问题则发布新版本。
+
+## 自检与验证
+
+安装后可以发送：
+
+```text
+使用 $qiepian-skill 安装自检，不生成切片文案。
 ```
 
-在 GitHub 网页修改仓库后，本地先 `git status` 确认工作区干净，再 `git pull --ff-only`。这会更新仓库文件；不会自动把 `rules/` 部署到 `D:\Daihuo`。规则恢复或部署应明确核对差异并获得相应授权，避免覆盖本机更新。
+如有 Python 3.9+，下载 ZIP 后可选运行文件完整性检查（仅标准库）：
 
-## 在其他机器部署
+```text
+python scripts/verify_package.py /path/to/qiepian-skill-v1.0.0.zip
+```
 
-将仓库克隆至该机器的 Codex 用户技能目录，文件夹名使用 `qiepian-skill`。本版本依赖 Windows 的 `D:\Daihuo` 规则位置；经确认后将 `rules/` 的内容部署到该目录。若有同名现行文件，先比较，不直接覆盖。不同路径的部署应相应调整技能路径及输出位置。
+`SHA256SUMS.txt` 用于核对整个 ZIP；ZIP 内的 `manifest.json` 记录各文件校验值。验收测试见 [测试方案](tests/验收测试方案.md)，两份 SRT 都是虚构素材，不包含视频。
 
-## 验证边界
+文件完整性验证不代表模型行为、商品营销事实或真实音画已经核实。目前仅面向 Codex，未宣称兼容其他工具，也不保证不同模型选段完全一致。
 
-已执行技能格式、调用配置和本地规则文件可读性校验。没有进行真实直播视频的音画核验；上传仓库不代表业务选段测试已通过。
+## 维护与发布
+
+本仓库的 `references/` 是分享版规则发布源；外部来源更新不会自动覆盖发布文件。维护者应在明确授权的规则修改后完整同步四份规则、核对版本和差异，再发布新版本。
+
+1. 修改技能或规则，更新 `VERSION.json` 与 `CHANGELOG.md`。
+2. 执行 `python -m unittest discover -s tests -p "test_*.py"`，以及 Codex 技能格式校验。
+3. 用测试方案检查多商品门槛、SRT-only 边界、原话/时间码/编号与末行格式。真实视频测试需另行提供素材，未执行要披露。
+4. 执行 `python scripts/build_release.py --output-dir dist`，再用 `verify_package.py` 检查生成的 ZIP。
+5. 提交修改、推送、创建相应版本标签，发布 ZIP 与 `SHA256SUMS.txt`。公开发布前检查仓库历史和待发布文件；不发布本机配置、素材、输出、认证数据或缓存。
+
+打包脚本按明确文件范围收集，不打包 `.git`、本机配置、输出、缓存和历史文档。临时验证结果不作为用户技能文件分发。

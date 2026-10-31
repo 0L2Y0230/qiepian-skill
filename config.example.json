@@ -1,0 +1,5 @@
+{
+  "rules_root": "references",
+  "environment_file": "references/执行环境与规则来源.md",
+  "output_dir": "outputs"
+}
