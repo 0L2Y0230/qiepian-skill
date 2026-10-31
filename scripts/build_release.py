@@ -7,7 +7,7 @@ import re
 import zipfile
 
 ROOT_FILES = ('SKILL.md', 'README.md', 'CHANGELOG.md', 'VERSION.json', 'config.example.json')
-RESOURCE_DIRS = {'agents': {'.yaml'}, 'references': {'.md'},
+RESOURCE_DIRS = {'agents': {'.yaml'}, 'references': {'.md'}, 'docs': {'.md'},
                  'scripts': {'.py'}, 'tests': {'.py', '.md', '.srt'}}
 
 

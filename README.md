@@ -1,95 +1,96 @@
 # 切片skill
 
-可长期分享的 Codex 技能：从直播带货 MP4 和/或 SRT 整理可直接剪辑的主播原话方案。
+跨 Agent 的直播带货原话切片技能，面向 **Codex、DeepSeek Harness、豆包工作、Kimi Code CLI**。读取 MP4 和/或可靠 SRT，产出可直接剪辑的主播原话方案，不自动剪辑或发布视频。
 
-**技能版本：1.0.1 · 业务规则：V5.1**
+**技能版本：1.1.0 · 业务规则：V5.1**
 
-[下载最新安装包](https://github.com/0L2Y0230/qiepian-skill/releases/latest) · [查看版本记录](CHANGELOG.md)
+[已公开发布的版本](https://github.com/0L2Y0230/qiepian-skill/releases) · [版本记录](CHANGELOG.md) · [完整安装与兼容性说明](docs/安装与兼容性.md)
 
 ## 安装
 
-推荐直接把下面这段发给 Codex：
+使用对应版本的 `qiepian-skill-v1.1.0.zip`，解压得到直接包含 SKILL.md 和 references/ 的 qiepian-skill 文件夹。版本记录存在不代表已经发布到 GitHub；未发布版本以实际交付的本地 ZIP 为准。
+
+| Agent | 安装完整目录 | 使用入口 |
+|---|---|---|
+| DeepSeek Harness | 项目 `.dsh/skills/` 或 `.agents/skills/`；用户默认 `~/.dsh/skills/` | 确认技能组件启用后，在任务中指定 qiepian-skill |
+| 豆包工作 | “插件·技能·伙伴 → 技能 → 添加 → 上传技能”，导入解压后的完整目录 | 工作任务中通过 `/`、`@` 或更多技能选择 |
+| Kimi Code CLI | 用户默认 `~/.kimi-code/skills/` 或项目 `.agents/skills/` | `/skill:qiepian-skill` |
+| Codex | CODEX_HOME 下的 skills；未设置时 `~/.codex/skills/` | `$qiepian-skill` |
+
+最终目录为 `<技能目录>/qiepian-skill/SKILL.md`，不能只复制入口。设置专属环境变量、插件或使用不同版本时，按完整说明核对实际路径。安装不自动启用 DeepSeek Harness 插件或连接账户；豆包使用官方导入入口。
+
+有 Python 3.9+ 时可在解压目录选择一条命令执行：
 
 ```text
-请使用 $skill-installer 安装 https://github.com/0L2Y0230/qiepian-skill 仓库根目录的技能，安装名称为 qiepian-skill。
-安装成功后，请读取 SKILL.md 的“安装完成提示与开始使用”，告诉我安装好了，并提示我直接发送 SRT 字幕文件，或 MP4＋对应 SRT 字幕文件。
+python scripts/install_agent.py --agent kimi
+python scripts/install_agent.py --agent deepseek
+python scripts/install_agent.py --agent codex
 ```
 
-也可以手动安装：
+安装到项目的公共 `.agents/skills/` 目录：
 
-1. 从 Release 下载 `qiepian-skill-v1.0.1.zip`，而不是直接使用 GitHub 自动生成的源码压缩包。
-2. 解压后得到一个 `qiepian-skill` 文件夹，里面直接包含 `SKILL.md`。
-3. 将该文件夹放入你所用 Codex 环境的用户技能目录。本机已配置 CODEX_HOME 的环境可使用其 skills 子目录；其他环境请以实际技能目录为准。
-4. 新开聊天，输入下方调用语句。默认不需要建立任何盘符目录、不需要作者账号、API 密钥或 Python。若未发现技能，可重启 Codex 后再调用。
+```text
+python scripts/install_agent.py --agent kimi --scope project --project-dir /absolute/project
+```
 
-## 安装好之后怎么用
+同一项目目录只需安装一次，不要用另一个 Agent 名称覆盖同名目标。安装器拒绝覆盖已有安装，支持 `--dry-run`，不复制 config.local.json。没有 Python 可手动安装；生成方案不依赖 Python。
 
-负责安装的 Codex 确认成功后，应提示：
+Codex 也可从本地目录安装，或使用其技能安装器安装已公开发布的仓库版本；远程仓库未更新前，不会自动获得本地新版本。
+
+## 安装之后
+
+新开任务，选择技能，发送：
+
+```text
+使用 qiepian-skill 安装自检，不生成切片文案。请完整读取规则，报告实际版本和可读取的文件。
+```
+
+安装助手确认安装和资源读取后提示：
 
 > 切片skill 已安装完成！你可以直接发送 SRT 字幕文件，或者 MP4 视频＋对应的 SRT 字幕文件，我会按规则生成切片文案。
 
-这是安装助手发送的完成回复，不是系统安装弹窗。手动解压后，可先调用一次技能。
+这是助手回复，不承诺系统弹窗。复制成功不能代替宿主技能发现和行为验收。
 
-- **只发 SRT 字幕文件**：生成文本切片方案，具体画面和原声标为待核实。
-- **发 MP4＋对应 SRT 字幕文件**：先处理字幕，视频可读取时再定向核验候选画面。
-- 素材中有多件商品时，可以顺便说要剪哪件；未指定时先询问。
-
-同一聊天已经进入本技能流程后，后续直接上传素材即可，不必每次重复输入调用指令。新聊天可在发送素材时加一句“切片文案”，或明确调用：
+首次使用：
 
 ```text
-使用 $qiepian-skill 生成切片文案，素材路径：……
+使用 qiepian-skill 生成切片文案。指定商品：阔腿牛仔裤。素材：我提供的 SRT。输出到我指定的工作目录。
 ```
 
-可指定商品和输出位置：
+已进入本技能流程的同一会话，后续直接发送字幕或视频＋字幕即可。多商品未指定时先询问。新会话也可用宿主技能调用语法。
+
+- 只有可靠 SRT：正常生成文本方案，画面、原声与精确剪点待核实。
+- MP4＋可靠 SRT：先处理字幕，再依据实际媒体能力定向核验。
+- 只有视频：依据可靠听辨和画面处理，不能支持关键判断时说明缺项，不编造编号。
+
+默认保留完整原话、来源时间码和可靠原始编号，预计 45–90 秒，四项正文、1 条标题、3 个话题，可靠原始编号置于绝对末行。用户当次要求优先；不足时不凑话术。
+
+## 规则与输出
+
+完整规则在 references/，默认相对路径，不依赖作者盘符、私有云盘或历史聊天。每次正式生成或修改重新完整读取，交付前验收。VERSION.json 分别记录技能和业务规则版本。
+
+默认输出到使用者工作目录的 outputs，可由当次请求或适用项目规则改位置。技能目录不存业务产物。沙箱只报告实际路径/下载附件，不能假称已保存到用户电脑。
+
+如需外部规则，复制 config.example.json 为 config.local.json。规则/环境相对路径以技能目录为基准，输出相对路径以工作目录为基准。一次只选一个完整规则源，显式配置无效时说明问题，不拼补版本。本机配置不进入分享包，也不由安装器复制。
+
+## 更新与验证
+
+更新前保存现有技能、自行修改内容和配置，并由使用者处理旧安装。本包不自动删除、移动或覆盖已有技能。素材与结果留在技能目录之外。
 
 ```text
-使用 $qiepian-skill，商品是阔腿牛仔裤，素材是我提供的 SRT；结果保存到我指定的输出文件夹。
+python scripts/verify_package.py /path/to/qiepian-skill-v1.1.0.zip
 ```
 
-只有 SRT 也能生成文本方案；多商品未指定时先确认。默认保留主播原话、来源时间码和可靠的原始 SRT 编号，预计 45–90 秒，四项正文、1 条标题、3 个话题。具体核实等级由本次实际证据决定，技能不会自动剪辑或发布视频。
-
-## 规则和输出位置
-
-完整规则随包放在 `references/`，默认使用相对路径。每次正式生成/修改重新读取，交付前验收。`VERSION.json` 中技能版本与规则版本分开记录。
-
-默认输出到使用者当前工作目录的 `outputs`，可在当次请求中改位置。请在素材/项目工作目录发起任务，避免将技能目录作为业务工作目录。
-
-需要固定外部规则或输出位置时，可复制 `config.example.json` 为 `config.local.json` 并修改三个路径。相对规则/环境路径以技能目录为基准；相对输出路径以当前工作目录为基准。这个可选配置不会提交到仓库，也不会装进 Release ZIP。不要将私密信息写进配置。
-
-一次只使用一个完整规则来源；不能拼用不同版本。用户/项目原有明确规则仍然生效，不会被本包自动覆盖。
-
-## 更新
-
-Release 安装用户：下载新版本，先阅读更新说明。备份现有技能及自行修改内容，将旧技能文件夹移出技能发现目录，再放入新文件夹，避免同时发现两个同名技能。仅在确有需要时，将自己的 `config.local.json` 复制到新目录，并核对配置仍然适用。素材与结果保存在技能目录之外，不随更新替换。
-
-Git 安装用户：先 `git status` 检查本地改动，再执行 `git pull --ff-only`。有改动时先保存或提交，发生分叉时不要强制覆盖。版本标签用于固定与回退某个已发布版本；每个 Release 安装包发布后不覆盖，同名版本有问题则发布新版本。
-
-## 自检与验证
-
-安装后可以发送：
-
-```text
-使用 $qiepian-skill 安装自检，不生成切片文案。
-```
-
-如有 Python 3.9+，下载 ZIP 后可选运行文件完整性检查（仅标准库）：
-
-```text
-python scripts/verify_package.py /path/to/qiepian-skill-v1.0.1.zip
-```
-
-`SHA256SUMS.txt` 用于核对整个 ZIP；ZIP 内的 `manifest.json` 记录各文件校验值。验收测试见 [测试方案](tests/验收测试方案.md)，两份 SRT 都是虚构素材，不包含视频。
-
-文件完整性验证不代表模型行为、商品营销事实或真实音画已经核实。目前仅面向 Codex，未宣称兼容其他工具，也不保证不同模型选段完全一致。
+ZIP 内 manifest.json 记录文件校验值，SHA256SUMS.txt 用于核对 ZIP。自动检查证明文件与安装完整性，不能证明模型遵守规则。每个 Agent 应按 [验收测试方案](tests/验收测试方案.md) 执行 T0–T4，有授权视频再执行 T5。演示字幕是虚构素材。
 
 ## 维护与发布
 
-本仓库的 `references/` 是分享版规则发布源；外部来源更新不会自动覆盖发布文件。维护者应在明确授权的规则修改后完整同步四份规则、核对版本和差异，再发布新版本。
+四份业务规则保持统一来源，变更须有授权；本次仅改宿主适配，未改业务规则原文字节。agents/openai.yaml 是可选 Codex 元数据，其他宿主可忽略。
 
-1. 修改技能或规则，更新 `VERSION.json` 与 `CHANGELOG.md`。
-2. 执行 `python -m unittest discover -s tests -p "test_*.py"`，以及 Codex 技能格式校验。
-3. 用测试方案检查多商品门槛、SRT-only 边界、原话/时间码/编号与末行格式。真实视频测试需另行提供素材，未执行要披露。
-4. 执行 `python scripts/build_release.py --output-dir dist`，再用 `verify_package.py` 检查生成的 ZIP。
-5. 提交修改、推送、创建相应版本标签，发布 ZIP 与 `SHA256SUMS.txt`。公开发布前检查仓库历史和待发布文件；不发布本机配置、素材、输出、认证数据或缓存。
+```text
+python -m unittest discover -s tests -p "test_*.py"
+python scripts/build_release.py --output-dir dist/release-v1.1.0
+python scripts/verify_package.py dist/release-v1.1.0/qiepian-skill-v1.1.0.zip
+```
 
-打包脚本按明确文件范围收集，不打包 `.git`、本机配置、输出、缓存和历史文档。临时验证结果不作为用户技能文件分发。
+另行运行技能格式校验，记录实际宿主行为测试范围。打包排除本机配置、Git、缓存、素材和输出。已有同名 ZIP 不覆盖；未获公开发布指令时只构建本地包，不自动推送或发布 Release。
