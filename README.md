@@ -2,16 +2,39 @@
 
 可长期分享的 Codex 技能：从直播带货 MP4 和/或 SRT 整理可直接剪辑的主播原话方案。
 
-**技能版本：1.0.0 · 业务规则：V5.1**
+**技能版本：1.0.1 · 业务规则：V5.1**
 
 [下载最新安装包](https://github.com/0L2Y0230/qiepian-skill/releases/latest) · [查看版本记录](CHANGELOG.md)
 
 ## 安装
 
-1. 从 Release 下载 `qiepian-skill-v1.0.0.zip`，而不是直接使用 GitHub 自动生成的源码压缩包。
+推荐直接把下面这段发给 Codex：
+
+```text
+请使用 $skill-installer 安装 https://github.com/0L2Y0230/qiepian-skill 仓库根目录的技能，安装名称为 qiepian-skill。
+安装成功后，请读取 SKILL.md 的“安装完成提示与开始使用”，告诉我安装好了，并提示我直接发送 SRT 字幕文件，或 MP4＋对应 SRT 字幕文件。
+```
+
+也可以手动安装：
+
+1. 从 Release 下载 `qiepian-skill-v1.0.1.zip`，而不是直接使用 GitHub 自动生成的源码压缩包。
 2. 解压后得到一个 `qiepian-skill` 文件夹，里面直接包含 `SKILL.md`。
 3. 将该文件夹放入你所用 Codex 环境的用户技能目录。本机已配置 CODEX_HOME 的环境可使用其 skills 子目录；其他环境请以实际技能目录为准。
-4. 新开聊天，输入下方调用语句。默认不需要建立任何盘符目录、不需要作者账号、API 密钥或 Python。
+4. 新开聊天，输入下方调用语句。默认不需要建立任何盘符目录、不需要作者账号、API 密钥或 Python。若未发现技能，可重启 Codex 后再调用。
+
+## 安装好之后怎么用
+
+负责安装的 Codex 确认成功后，应提示：
+
+> 切片skill 已安装完成！你可以直接发送 SRT 字幕文件，或者 MP4 视频＋对应的 SRT 字幕文件，我会按规则生成切片文案。
+
+这是安装助手发送的完成回复，不是系统安装弹窗。手动解压后，可先调用一次技能。
+
+- **只发 SRT 字幕文件**：生成文本切片方案，具体画面和原声标为待核实。
+- **发 MP4＋对应 SRT 字幕文件**：先处理字幕，视频可读取时再定向核验候选画面。
+- 素材中有多件商品时，可以顺便说要剪哪件；未指定时先询问。
+
+同一聊天已经进入本技能流程后，后续直接上传素材即可，不必每次重复输入调用指令。新聊天可在发送素材时加一句“切片文案”，或明确调用：
 
 ```text
 使用 $qiepian-skill 生成切片文案，素材路径：……
@@ -52,7 +75,7 @@ Git 安装用户：先 `git status` 检查本地改动，再执行 `git pull --f
 如有 Python 3.9+，下载 ZIP 后可选运行文件完整性检查（仅标准库）：
 
 ```text
-python scripts/verify_package.py /path/to/qiepian-skill-v1.0.0.zip
+python scripts/verify_package.py /path/to/qiepian-skill-v1.0.1.zip
 ```
 
 `SHA256SUMS.txt` 用于核对整个 ZIP；ZIP 内的 `manifest.json` 记录各文件校验值。验收测试见 [测试方案](tests/验收测试方案.md)，两份 SRT 都是虚构素材，不包含视频。
